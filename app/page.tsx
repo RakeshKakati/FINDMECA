@@ -29,11 +29,17 @@ function CheckoutForm() {
   const elements = useElements()
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [email, setEmail] = useState('')
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault()
     
     if (!stripe || !elements) {
+      return
+    }
+
+    if (!email || !email.includes('@')) {
+      setError('Please enter a valid email address')
       return
     }
 
@@ -56,6 +62,7 @@ function CheckoutForm() {
         },
         body: JSON.stringify({
           amount: 2900,
+          email: email,
         }),
       })
 
@@ -80,9 +87,8 @@ function CheckoutForm() {
         setError(confirmError.message || 'Payment failed')
         setLoading(false)
       } else if (paymentIntent?.status === 'succeeded') {
-        sessionStorage.setItem('paymentCompleted', 'true')
-        sessionStorage.setItem('paymentIntentId', paymentIntent.id)
-        window.location.href = '/dashboard'
+        // Redirect to success page with email
+        window.location.href = `/payment-success?email=${encodeURIComponent(email)}&paymentIntentId=${paymentIntent.id}`
       }
     } catch (err) {
       setError('An error occurred. Please try again.')
@@ -92,6 +98,19 @@ function CheckoutForm() {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
+      <div className="space-y-2">
+        <label htmlFor="email" className="text-sm font-semibold text-gray-900">Email Address</label>
+        <Input
+          id="email"
+          type="email"
+          required
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          placeholder="your@email.com"
+          className="w-full"
+        />
+        <p className="text-xs text-gray-500">We'll send your access code to this email</p>
+      </div>
       <div className="space-y-2">
         <label className="text-sm font-semibold text-gray-900">Card Details</label>
         <div className="p-4 border-2 border-gray-200 rounded-lg focus-within:border-blue-500 transition-colors">
@@ -654,10 +673,18 @@ export default function LandingPage() {
                 <a href="#pricing" className="text-white/80 hover:text-white transition-colors text-sm font-medium">
                   Pricing
                 </a>
+                <a href="/login" className="text-white/80 hover:text-white transition-colors text-sm font-medium">
+                  Login
+                </a>
               </div>
-              <a href="#pricing" className="bg-white text-black px-6 py-2.5 rounded-md text-sm font-semibold hover:bg-gray-100 transition-colors">
-                Get Started
-              </a>
+              <div className="flex items-center gap-4">
+                <a href="/login" className="text-white/80 hover:text-white transition-colors text-sm font-medium md:hidden">
+                  Login
+                </a>
+                <a href="#pricing" className="bg-white text-black px-6 py-2.5 rounded-md text-sm font-semibold hover:bg-gray-100 transition-colors">
+                  Get Started
+                </a>
+              </div>
             </div>
           </div>
         </nav>

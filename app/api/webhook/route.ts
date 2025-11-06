@@ -36,7 +36,44 @@ export async function POST(request: Request) {
   if (event.type === 'payment_intent.succeeded') {
     const paymentIntent = event.data.object as Stripe.PaymentIntent
     console.log('Payment succeeded:', paymentIntent.id)
-    // Here you could update a database, send confirmation emails, etc.
+    
+    // Generate access code
+    const accessCode = Math.random().toString(36).substring(2, 10).toUpperCase()
+    
+    // Get or create customer
+    let customerId = paymentIntent.customer as string | null
+    
+    if (!customerId && paymentIntent.metadata?.email) {
+      // Find existing customer by email
+      const customers = await stripe.customers.list({
+        email: paymentIntent.metadata.email,
+        limit: 1,
+      })
+      
+      if (customers.data.length > 0) {
+        customerId = customers.data[0].id
+      } else {
+        // Create new customer
+        const customer = await stripe.customers.create({
+          email: paymentIntent.metadata.email,
+        })
+        customerId = customer.id
+      }
+    }
+    
+    // Store access code in customer metadata
+    if (customerId) {
+      await stripe.customers.update(customerId, {
+        metadata: {
+          accessCode: accessCode,
+          paymentIntentId: paymentIntent.id,
+          lastPaymentDate: new Date().toISOString(),
+        },
+      })
+    }
+    
+    // TODO: Send email with access code (implement email service)
+    console.log('Access code generated:', accessCode, 'for customer:', customerId)
   } else if (event.type === 'payment_intent.payment_failed') {
     const paymentIntent = event.data.object as Stripe.PaymentIntent
     console.log('Payment failed:', paymentIntent.id)

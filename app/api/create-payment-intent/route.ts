@@ -7,7 +7,7 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '', {
 
 export async function POST(request: Request) {
   try {
-    const { amount } = await request.json()
+    const { amount, email } = await request.json()
 
     if (!amount) {
       return NextResponse.json(
@@ -16,10 +16,32 @@ export async function POST(request: Request) {
       )
     }
 
+    // Create or retrieve Stripe customer
+    let customerId: string | undefined
+    if (email) {
+      const customers = await stripe.customers.list({
+        email: email,
+        limit: 1,
+      })
+      
+      if (customers.data.length > 0) {
+        customerId = customers.data[0].id
+      } else {
+        const customer = await stripe.customers.create({
+          email: email,
+        })
+        customerId = customer.id
+      }
+    }
+
     // Create a PaymentIntent
     const paymentIntent = await stripe.paymentIntents.create({
       amount: amount,
       currency: 'cad',
+      customer: customerId,
+      metadata: {
+        email: email || '',
+      },
       automatic_payment_methods: {
         enabled: true,
       },

@@ -38,32 +38,43 @@ export default function Dashboard() {
   const itemsPerPage = 20
 
   useEffect(() => {
-    const paymentCompleted = sessionStorage.getItem('paymentCompleted')
-    if (paymentCompleted !== 'true') {
-      router.push('/')
-      return
-    }
-
-    fetch('/api/data')
-      .then(res => {
-        if (!res.ok) {
-          throw new Error('Failed to fetch data')
-        }
-        return res.json()
-      })
+    // Verify session
+    fetch('/api/verify-session')
+      .then(res => res.json())
       .then(data => {
-        setData(data)
-        setLoading(false)
+        if (!data.authenticated) {
+          router.push('/login')
+          return
+        }
+
+        // Fetch data
+        fetch('/api/data')
+          .then(res => {
+            if (!res.ok) {
+              throw new Error('Failed to fetch data')
+            }
+            return res.json()
+          })
+          .then(data => {
+            setData(data)
+            setLoading(false)
+          })
+          .catch(err => {
+            setError(err.message)
+            setLoading(false)
+          })
       })
-      .catch(err => {
-        setError(err.message)
-        setLoading(false)
+      .catch(() => {
+        router.push('/login')
       })
   }, [router])
 
-  const handleLogout = () => {
-    sessionStorage.removeItem('paymentCompleted')
-    sessionStorage.removeItem('paymentIntentId')
+  const handleLogout = async () => {
+    try {
+      await fetch('/api/logout', { method: 'POST' })
+    } catch (err) {
+      console.error('Logout error:', err)
+    }
     router.push('/')
   }
 
