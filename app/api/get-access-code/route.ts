@@ -42,13 +42,24 @@ export async function POST(request: Request) {
     }
 
     const customer = customers.data[0]
-    const accessCode = customer.metadata?.accessCode
+    let accessCode = customer.metadata?.accessCode
 
+    // If access code doesn't exist, generate it now (fallback if webhook didn't fire)
     if (!accessCode) {
-      return NextResponse.json(
-        { error: 'Access code not found. Please contact support.' },
-        { status: 404 }
-      )
+      // Generate new access code
+      accessCode = Math.random().toString(36).substring(2, 10).toUpperCase()
+      
+      // Update customer metadata with the access code
+      await stripe.customers.update(customer.id, {
+        metadata: {
+          ...customer.metadata,
+          accessCode: accessCode,
+          paymentIntentId: paymentIntent.id,
+          lastPaymentDate: new Date().toISOString(),
+        },
+      })
+      
+      console.log('Access code generated on-demand:', accessCode, 'for customer:', customer.id)
     }
 
     return NextResponse.json({

@@ -27,26 +27,50 @@ function PaymentSuccessContent() {
   useEffect(() => {
     // Check if payment was successful and get access code
     if (email && paymentIntentId) {
-      fetch('/api/get-access-code', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          email,
-          paymentIntentId,
-        }),
-      })
-        .then(res => res.json())
-        .then(data => {
-          if (data.accessCode) {
-            setAccessCode(data.accessCode)
-          }
-          setChecking(false)
+      // Retry logic: try multiple times in case webhook is still processing
+      let retries = 0
+      const maxRetries = 5
+      const retryDelay = 2000 // 2 seconds
+      
+      const fetchAccessCode = () => {
+        fetch('/api/get-access-code', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            email,
+            paymentIntentId,
+          }),
         })
-        .catch(() => {
-          setChecking(false)
-        })
+          .then(res => res.json())
+          .then(data => {
+            if (data.accessCode) {
+              setAccessCode(data.accessCode)
+              setChecking(false)
+            } else if (retries < maxRetries) {
+              // Retry if access code not found yet
+              retries++
+              setTimeout(fetchAccessCode, retryDelay)
+            } else {
+              // Max retries reached, show error
+              setError('Access code is being generated. Please wait a moment and refresh the page.')
+              setChecking(false)
+            }
+          })
+          .catch((err) => {
+            if (retries < maxRetries) {
+              retries++
+              setTimeout(fetchAccessCode, retryDelay)
+            } else {
+              setError('Failed to retrieve access code. Please contact support.')
+              setChecking(false)
+            }
+          })
+      }
+      
+      // Start fetching
+      fetchAccessCode()
     } else {
       setChecking(false)
     }
