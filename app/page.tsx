@@ -61,7 +61,7 @@ function CheckoutForm() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          amount: 50,
+          amount: 1900, // $19 CAD
           email: email,
         }),
       })
@@ -143,7 +143,7 @@ function CheckoutForm() {
         className="w-full bg-black hover:bg-gray-900 text-white py-6 text-base font-semibold rounded-md transition-all"
         size="lg"
       >
-        {loading ? 'Processing...' : 'Get Access for $0.50 CAD'}
+        {loading ? 'Processing...' : 'Get Access for $19 CAD'}
       </Button>
     </form>
   )
@@ -621,8 +621,13 @@ export default function LandingPage() {
     },
     "offers": {
       "@type": "Offer",
-      "price": "0.50",
-      "priceCurrency": "CAD"
+      "price": "19",
+      "priceCurrency": "CAD",
+      "priceSpecification": {
+        "@type": "UnitPriceSpecification",
+        "price": "19",
+        "priceCurrency": "CAD"
+      }
     }
   }
 
@@ -806,7 +811,7 @@ export default function LandingPage() {
                 messages={[
                   "Just used the CPA directory to find a new accountant",
                   "Saved me $2,400 this year! The old firm was overcharging me",
-                  "Best $0.50 I ever spent 🎉"
+                  "Best $19 I ever spent 🎉"
                 ]}
               />
               <WhatsAppScreenshot
@@ -1003,9 +1008,16 @@ export default function LandingPage() {
                 </div>
                 <CardHeader className="text-center pt-10 pb-8">
                   <div className="mb-8">
-                    <span className="text-3xl text-gray-400">$</span>
-                    <span className="text-7xl font-bold text-black ml-1">0.50</span>
-                    <span className="text-2xl text-gray-400 ml-2">CAD</span>
+                    <div className="flex items-center justify-center gap-3 mb-2">
+                      <span className="text-2xl text-gray-400 line-through">$49</span>
+                      <span className="text-sm text-red-600 font-semibold bg-red-50 px-2 py-1 rounded">Save 61%</span>
+                    </div>
+                    <div className="flex items-baseline justify-center">
+                      <span className="text-3xl text-gray-400">$</span>
+                      <span className="text-7xl font-bold text-black ml-1">19</span>
+                      <span className="text-2xl text-gray-400 ml-2">CAD</span>
+                    </div>
+                    <p className="text-sm text-gray-500 mt-2">Compare at $49 CAD</p>
                   </div>
                   <p className="text-lg text-gray-600 mb-8 leading-relaxed">
                     Get instant access to the complete CPA directory. Compare firms, read reviews, and find the accountant that saves you money.
