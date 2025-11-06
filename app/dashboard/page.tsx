@@ -167,7 +167,7 @@ export default function Dashboard() {
     ])
     
     // Try to find known cities first
-    for (const city of knownCities) {
+    for (const city of Array.from(knownCities)) {
       const regex = new RegExp(`\\b${city.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'i')
       if (regex.test(address)) {
         return city
