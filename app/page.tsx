@@ -61,7 +61,7 @@ function CheckoutForm() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          amount: 2900,
+          amount: 1,
           email: email,
         }),
       })
@@ -143,7 +143,7 @@ function CheckoutForm() {
         className="w-full bg-black hover:bg-gray-900 text-white py-6 text-base font-semibold rounded-md transition-all"
         size="lg"
       >
-        {loading ? 'Processing...' : 'Get Access for $29 CAD'}
+        {loading ? 'Processing...' : 'Get Access for $0.01 CAD'}
       </Button>
     </form>
   )
@@ -621,7 +621,7 @@ export default function LandingPage() {
     },
     "offers": {
       "@type": "Offer",
-      "price": "29.00",
+      "price": "0.01",
       "priceCurrency": "CAD"
     }
   }
@@ -806,7 +806,7 @@ export default function LandingPage() {
                 messages={[
                   "Just used the CPA directory to find a new accountant",
                   "Saved me $2,400 this year! The old firm was overcharging me",
-                  "Best $29 I ever spent 🎉"
+                  "Best $0.01 I ever spent 🎉"
                 ]}
               />
               <WhatsAppScreenshot
@@ -1004,7 +1004,7 @@ export default function LandingPage() {
                 <CardHeader className="text-center pt-10 pb-8">
                   <div className="mb-8">
                     <span className="text-3xl text-gray-400">$</span>
-                    <span className="text-7xl font-bold text-black ml-1">29</span>
+                    <span className="text-7xl font-bold text-black ml-1">0.01</span>
                     <span className="text-2xl text-gray-400 ml-2">CAD</span>
                   </div>
                   <p className="text-lg text-gray-600 mb-8 leading-relaxed">

@@ -89,7 +89,7 @@ CPACANADA/
 - The current implementation uses sessionStorage for payment verification
 - For production, you should implement proper backend authentication and database storage
 - The CSV data is parsed and served via the `/api/data` endpoint
-- Payment amount is set to $29.00 CAD (2900 cents) - you can modify this in `app/page.tsx`
+- Payment amount is set to $0.01 CAD (1 cent) - you can modify this in `app/page.tsx`
 
 ## Development
 
