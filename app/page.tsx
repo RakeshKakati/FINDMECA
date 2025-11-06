@@ -1017,7 +1017,6 @@ export default function LandingPage() {
                       <span className="text-7xl font-bold text-black ml-1">19</span>
                       <span className="text-2xl text-gray-400 ml-2">CAD</span>
                     </div>
-                    <p className="text-sm text-gray-500 mt-2">Compare at $49 CAD</p>
                   </div>
                   <p className="text-lg text-gray-600 mb-8 leading-relaxed">
                     Get instant access to the complete CPA directory. Compare firms, read reviews, and find the accountant that saves you money.
